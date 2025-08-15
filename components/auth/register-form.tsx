@@ -50,11 +50,14 @@ export function RegisterForm() {
       const data = await response.json()
 
       if (response.ok) {
-        login(data.token)
+        const user = await login(data.token)
 
-        setTimeout(() => {
-          router.push("/account")
-        }, 100)
+        if (user) {
+          // Force page reload to ensure auth state is properly updated
+          window.location.href = "/account"
+        } else {
+          setError("Failed to authenticate user")
+        }
       } else {
         setError(data.error || "Registration failed")
       }
@@ -109,7 +112,8 @@ export function RegisterForm() {
                   onChange={(e) => setName(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
+                  placeholder="Enter your full name"
+                  className="h-12 border-slate-200/60 bg-white/70 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/90 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
@@ -124,7 +128,8 @@ export function RegisterForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
+                  placeholder="Enter your email"
+                  className="h-12 border-slate-200/60 bg-white/70 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/90 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
@@ -140,7 +145,8 @@ export function RegisterForm() {
                   required
                   disabled={isLoading}
                   minLength={6}
-                  className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
+                  placeholder="Create a password"
+                  className="h-12 border-slate-200/60 bg-white/70 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/90 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
@@ -156,7 +162,8 @@ export function RegisterForm() {
                   required
                   disabled={isLoading}
                   minLength={6}
-                  className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
+                  placeholder="Confirm your password"
+                  className="h-12 border-slate-200/60 bg-white/70 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/90 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 

@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "@/lib/hooks/use-auth"
 import Link from "next/link"
-import { Shield } from "lucide-react"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -36,15 +35,18 @@ export function LoginForm() {
       const data = await response.json()
 
       if (response.ok) {
-        login(data.token)
+        const user = await login(data.token)
 
-        setTimeout(() => {
-          if (data.user.role === "admin") {
+        if (user) {
+          // Force page reload to ensure auth state is properly updated
+          if (user.role === "admin") {
             window.location.href = "/admin"
           } else {
             window.location.href = "/account"
           }
-        }, 500)
+        } else {
+          setError("Failed to authenticate user")
+        }
       } else {
         setError(data.error || "Login failed")
       }
@@ -80,8 +82,8 @@ export function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isLoading}
-              placeholder="admin@1place.com"
-              className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
+              placeholder="Enter your email"
+              className="h-12 border-slate-200/60 bg-white/70 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/90 text-slate-900 placeholder:text-slate-500"
             />
           </div>
 
@@ -96,8 +98,8 @@ export function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={isLoading}
-              placeholder="••••••••"
-              className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
+              placeholder="Enter your password"
+              className="h-12 border-slate-200/60 bg-white/70 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/90 text-slate-900 placeholder:text-slate-500"
             />
           </div>
 
@@ -108,21 +110,6 @@ export function LoginForm() {
           >
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
-
-          <div className="bg-gradient-to-r from-purple-50/80 to-blue-50/80 backdrop-blur-sm border border-purple-200/60 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Shield className="w-5 h-5 text-purple-600" />
-              <span className="text-sm font-semibold text-purple-900">Admin Access</span>
-            </div>
-            <div className="text-sm text-purple-700 space-y-1">
-              <div>
-                <strong>Email:</strong> admin@1place.com
-              </div>
-              <div>
-                <strong>Password:</strong> admin123
-              </div>
-            </div>
-          </div>
 
           <p className="text-center text-sm text-slate-600">
             Don't have an account?{" "}

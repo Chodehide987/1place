@@ -6,7 +6,7 @@ import type { UserSession } from "@/lib/models/user"
 interface AuthContextType {
   user: UserSession | null
   isLoading: boolean
-  login: (token: string) => void
+  login: (token: string) => Promise<UserSession | null>
   logout: () => void
   isAdmin: boolean
 }
@@ -28,9 +28,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json()
         setUser(data.user)
+        return data.user // Return user data for immediate use
       } else {
         localStorage.removeItem("token")
         setUser(null)
+        return null
       }
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
@@ -38,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       localStorage.removeItem("token")
       setUser(null)
+      return null
     } finally {
       setIsLoading(false)
     }
@@ -52,9 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const login = (token: string) => {
+  const login = async (token: string) => {
     localStorage.setItem("token", token)
-    fetchUser(token)
+    return await fetchUser(token)
   }
 
   const logout = () => {
