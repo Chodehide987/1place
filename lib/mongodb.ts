@@ -1,7 +1,5 @@
 import { MongoClient, type Db } from "mongodb"
 
-const options = {}
-
 let client: MongoClient
 let clientPromise: Promise<MongoClient>
 
@@ -10,40 +8,32 @@ function getMongoUri(): string {
   console.log("[v0] Checking MongoDB URI:", uri ? "URI found" : "URI missing")
 
   if (!uri) {
-    console.error(
-      "[v0] Available environment variables:",
-      Object.keys(process.env).filter((key) => key.includes("MONGO")),
-    )
     console.error("[v0] MONGODB_URI environment variable is missing")
     throw new Error(
-      'Invalid/Missing environment variable: "MONGODB_URI". Please add your MongoDB connection string to Vercel environment variables',
+      "Missing MONGODB_URI environment variable. Please add it in Vercel Project Settings > Environment Variables",
     )
   }
 
   if (!uri.startsWith("mongodb://") && !uri.startsWith("mongodb+srv://")) {
-    console.error("[v0] Invalid MongoDB URI format:", uri.substring(0, 20) + "...")
+    console.error("[v0] Invalid MongoDB URI format")
     throw new Error("Invalid MongoDB URI format. Must start with mongodb:// or mongodb+srv://")
   }
 
-  console.log(
-    "[v0] MongoDB URI format:",
-    uri.startsWith("mongodb+srv://") ? "Atlas (mongodb+srv://)" : "Standard (mongodb://)",
-  )
   return uri
 }
 
 function initializeClient(): Promise<MongoClient> {
-  const uri = getMongoUri() // Lazy check for MONGODB_URI
+  const uri = getMongoUri()
 
   console.log("[v0] Initializing MongoDB connection...")
-  console.log("[v0] Environment:", process.env.NODE_ENV)
 
   const connectionOptions = {
-    maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-    bufferMaxEntries: 0,
-    bufferCommands: false,
+    maxPoolSize: 5,
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 30000,
+    connectTimeoutMS: 10000,
+    retryWrites: true,
+    w: "majority",
   }
 
   if (process.env.NODE_ENV === "development") {
@@ -76,40 +66,31 @@ export async function getDatabase(): Promise<Db> {
     console.log("[v0] Getting database connection...")
     const client = await getClientPromise()
 
-    // Test connection with timeout
-    await Promise.race([
-      client.db("admin").command({ ping: 1 }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error("Connection timeout")), 10000)),
-    ])
-
+    await client.db("admin").command({ ping: 1 })
     console.log("[v0] MongoDB connection verified")
+
     const db = client.db("1place")
     console.log("[v0] Database connection established to '1place'")
-
-    try {
-      const collections = await db.listCollections().toArray()
-      console.log(
-        "[v0] Available collections:",
-        collections.map((c) => c.name),
-      )
-    } catch (listError) {
-      console.warn("[v0] Could not list collections:", listError)
-    }
 
     return db
   } catch (error) {
     console.error("[v0] Database connection error:", error)
+
     if (error instanceof Error) {
-      if (error.message.includes("ENOTFOUND")) {
-        throw new Error("MongoDB server not found. Check your connection string.")
+      if (error.message.includes("ENOTFOUND") || error.message.includes("getaddrinfo")) {
+        throw new Error("Cannot reach MongoDB server. Check your connection string and network.")
       }
-      if (error.message.includes("authentication failed")) {
-        throw new Error("MongoDB authentication failed. Check your credentials.")
+      if (error.message.includes("authentication failed") || error.message.includes("auth")) {
+        throw new Error("MongoDB authentication failed. Check your username and password.")
       }
-      if (error.message.includes("timeout")) {
-        throw new Error("MongoDB connection timeout. Check your network connection.")
+      if (error.message.includes("timeout") || error.message.includes("timed out")) {
+        throw new Error("MongoDB connection timeout. Server may be overloaded or unreachable.")
+      }
+      if (error.message.includes("ECONNREFUSED")) {
+        throw new Error("MongoDB connection refused. Check if the server is running.")
       }
     }
+
     throw new Error(`Database connection failed: ${error instanceof Error ? error.message : "Unknown error"}`)
   }
 }
