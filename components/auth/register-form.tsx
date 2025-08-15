@@ -80,11 +80,11 @@ export function RegisterForm() {
           <p className="text-slate-600">Join the digital marketplace community</p>
         </div>
 
-        <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+        <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-lg">
           <CardHeader className="text-center pb-6">
             <div className="inline-flex items-center gap-2 mb-2">
-              <UserPlus className="w-5 h-5 text-purple-600" />
-              <CardTitle className="text-xl font-semibold text-slate-900">Create Account</CardTitle>
+              <UserPlus className="w-6 h-6 text-purple-600" />
+              <CardTitle className="text-2xl font-bold text-slate-900">Create Account</CardTitle>
             </div>
             <CardDescription className="text-slate-600">
               Sign up to start accessing premium digital products
@@ -93,7 +93,7 @@ export function RegisterForm() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <Alert variant="destructive" className="border-red-200 bg-red-50">
+                <Alert variant="destructive" className="border-red-200 bg-red-50/80 backdrop-blur-sm">
                   <AlertDescription className="text-red-700">{error}</AlertDescription>
                 </Alert>
               )}
@@ -109,7 +109,7 @@ export function RegisterForm() {
                   onChange={(e) => setName(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="h-11 border-slate-200 focus:border-purple-500 focus:ring-purple-500/20"
+                  className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
                 />
               </div>
 
@@ -124,7 +124,7 @@ export function RegisterForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="h-11 border-slate-200 focus:border-purple-500 focus:ring-purple-500/20"
+                  className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
                 />
               </div>
 
@@ -140,7 +140,7 @@ export function RegisterForm() {
                   required
                   disabled={isLoading}
                   minLength={6}
-                  className="h-11 border-slate-200 focus:border-purple-500 focus:ring-purple-500/20"
+                  className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
                 />
               </div>
 
@@ -156,13 +156,13 @@ export function RegisterForm() {
                   required
                   disabled={isLoading}
                   minLength={6}
-                  className="h-11 border-slate-200 focus:border-purple-500 focus:ring-purple-500/20"
+                  className="h-12 border-slate-200/60 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-purple-500/20 focus:bg-white/80"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating account..." : "Create Account"}
@@ -170,7 +170,10 @@ export function RegisterForm() {
 
               <p className="text-center text-sm text-slate-600">
                 Already have an account?{" "}
-                <Link href="/login" className="text-purple-600 hover:text-purple-700 font-medium hover:underline">
+                <Link
+                  href="/login"
+                  className="text-purple-600 hover:text-purple-700 font-semibold hover:underline transition-colors"
+                >
                   Sign in
                 </Link>
               </p>
