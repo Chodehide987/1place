@@ -1,10 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { authenticateUser } from "@/lib/auth/server"
 import { generateToken } from "@/lib/auth/client"
+import { ensureSetup } from "@/lib/auto-setup"
 
 export async function POST(request: NextRequest) {
   try {
     console.log("[v0] Login attempt started")
+
+    await ensureSetup()
+
     const { email, password } = await request.json()
 
     if (!email || !password) {

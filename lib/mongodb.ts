@@ -76,10 +76,13 @@ export async function getDatabase(): Promise<Db> {
     console.log("[v0] Getting database connection...")
     const client = await getClientPromise()
 
-    console.log("[v0] Testing MongoDB connection...")
-    await client.db("admin").command({ ping: 1 })
-    console.log("[v0] MongoDB ping successful")
+    // Test connection with timeout
+    await Promise.race([
+      client.db("admin").command({ ping: 1 }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Connection timeout")), 10000)),
+    ])
 
+    console.log("[v0] MongoDB connection verified")
     const db = client.db("1place")
     console.log("[v0] Database connection established to '1place'")
 
@@ -97,11 +100,15 @@ export async function getDatabase(): Promise<Db> {
   } catch (error) {
     console.error("[v0] Database connection error:", error)
     if (error instanceof Error) {
-      console.error("[v0] Error details:", {
-        name: error.name,
-        message: error.message,
-        stack: error.stack?.split("\n").slice(0, 3).join("\n"),
-      })
+      if (error.message.includes("ENOTFOUND")) {
+        throw new Error("MongoDB server not found. Check your connection string.")
+      }
+      if (error.message.includes("authentication failed")) {
+        throw new Error("MongoDB authentication failed. Check your credentials.")
+      }
+      if (error.message.includes("timeout")) {
+        throw new Error("MongoDB connection timeout. Check your network connection.")
+      }
     }
     throw new Error(`Database connection failed: ${error instanceof Error ? error.message : "Unknown error"}`)
   }
