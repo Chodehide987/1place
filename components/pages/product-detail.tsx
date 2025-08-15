@@ -143,9 +143,9 @@ export function ProductDetail({ slug }: ProductDetailProps) {
           )}
 
           {/* Gallery Images */}
-          {product.galleryImages.length > 0 && (
+          {(product.galleryImages?.length || 0) > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-              {product.galleryImages.map((image, index) => (
+              {(product.galleryImages || []).map((image, index) => (
                 <div key={index} className="aspect-video bg-muted rounded-lg overflow-hidden">
                   <img
                     src={image || "/placeholder.svg"}
@@ -183,7 +183,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
               <div>
                 <h4 className="font-medium mb-2">Tags</h4>
                 <div className="flex flex-wrap gap-1">
-                  {product.tags.map((tag, index) => (
+                  {(product.tags || []).map((tag, index) => (
                     <Badge key={index} variant="outline" className="text-xs">
                       {tag}
                     </Badge>
@@ -241,7 +241,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
       <SecureFileList product={product} hasAccess={hasAccess} isAuthenticated={isAuthenticated} />
 
       {/* Related Products */}
-      {relatedProducts.length > 0 && (
+      {(relatedProducts?.length || 0) > 0 && (
         <div className="mt-12">
           <h2 className="text-2xl font-bold mb-6">Related Products</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">

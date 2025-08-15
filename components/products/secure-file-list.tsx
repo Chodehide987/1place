@@ -79,7 +79,7 @@ export function SecureFileList({ product, hasAccess, isAuthenticated }: SecureFi
   return (
     <div className="space-y-6">
       {/* Downloadable Files */}
-      {product.downloadableFiles.length > 0 && (
+      {(product.downloadableFiles?.length || 0) > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -101,7 +101,7 @@ export function SecureFileList({ product, hasAccess, isAuthenticated }: SecureFi
             )}
 
             <div className="space-y-3">
-              {product.downloadableFiles.map((file, index) => (
+              {(product.downloadableFiles || []).map((file, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-card/50">
                   <div className="flex items-center gap-3">
                     <FileText className="h-4 w-4 text-muted-foreground" />
@@ -140,7 +140,7 @@ export function SecureFileList({ product, hasAccess, isAuthenticated }: SecureFi
       )}
 
       {/* External Links */}
-      {product.externalLinks.length > 0 && (
+      {(product.externalLinks?.length || 0) > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export function SecureFileList({ product, hasAccess, isAuthenticated }: SecureFi
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {product.externalLinks.map((link, index) => (
+              {(product.externalLinks || []).map((link, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-card/50">
                   <div className="flex items-center gap-3">
                     <FileText className="h-4 w-4 text-muted-foreground" />
@@ -175,7 +175,7 @@ export function SecureFileList({ product, hasAccess, isAuthenticated }: SecureFi
       )}
 
       {/* Secrets */}
-      {product.secrets.length > 0 && (
+      {(product.secrets?.length || 0) > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -197,7 +197,7 @@ export function SecureFileList({ product, hasAccess, isAuthenticated }: SecureFi
             )}
 
             <div className="space-y-3">
-              {product.secrets.map((secret, index) => (
+              {(product.secrets || []).map((secret, index) => (
                 <div key={index} className="p-3 border rounded-lg bg-card/50">
                   <div className="flex items-center justify-between mb-2">
                     <p className="font-medium">{secret.name}</p>

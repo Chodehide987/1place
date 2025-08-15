@@ -48,7 +48,7 @@ export function UserLibrary() {
     (product) =>
       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase())),
+      (product.tags || []).some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase())),
   )
 
   const accessibleProducts = filteredProducts.filter((p) => p.hasAccess)
@@ -99,16 +99,16 @@ export function UserLibrary() {
         <TabsList>
           <TabsTrigger value="accessible" className="flex items-center gap-2">
             <Unlock className="h-4 w-4" />
-            Accessible ({accessibleProducts.length})
+            Accessible ({accessibleProducts?.length || 0})
           </TabsTrigger>
           <TabsTrigger value="locked" className="flex items-center gap-2">
             <Lock className="h-4 w-4" />
-            Locked ({lockedProducts.length})
+            Locked ({lockedProducts?.length || 0})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="accessible" className="space-y-4">
-          {accessibleProducts.length > 0 ? (
+          {(accessibleProducts?.length || 0) > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {accessibleProducts.map((product) => (
                 <LibraryProductCard key={product._id?.toString()} product={product} />
@@ -133,7 +133,7 @@ export function UserLibrary() {
         </TabsContent>
 
         <TabsContent value="locked" className="space-y-4">
-          {lockedProducts.length > 0 ? (
+          {(lockedProducts?.length || 0) > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {lockedProducts.map((product) => (
                 <LibraryProductCard key={product._id?.toString()} product={product} />
@@ -196,30 +196,30 @@ function LibraryProductCard({ product }: { product: UserLibraryProduct }) {
         <p className="text-sm text-muted-foreground line-clamp-3 mb-3">{product.shortDescription}</p>
 
         <div className="flex flex-wrap gap-1 mb-3">
-          {product.tags.slice(0, 3).map((tag, index) => (
+          {(product.tags || []).slice(0, 3).map((tag, index) => (
             <Badge key={index} variant="outline" className="text-xs">
               {tag}
             </Badge>
           ))}
-          {product.tags.length > 3 && (
+          {(product.tags?.length || 0) > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{product.tags.length - 3}
+              +{(product.tags?.length || 0) - 3}
             </Badge>
           )}
         </div>
 
         {product.hasAccess && (
           <div className="space-y-2">
-            {product.downloadableFiles.length > 0 && (
+            {(product.downloadableFiles?.length || 0) > 0 && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Download className="h-3 w-3" />
-                {product.downloadableFiles.length} downloadable files
+                {product.downloadableFiles?.length || 0} downloadable files
               </div>
             )}
-            {product.externalLinks.length > 0 && (
+            {(product.externalLinks?.length || 0) > 0 && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <ExternalLink className="h-3 w-3" />
-                {product.externalLinks.length} external links
+                {product.externalLinks?.length || 0} external links
               </div>
             )}
           </div>

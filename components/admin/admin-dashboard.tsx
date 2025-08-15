@@ -132,7 +132,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {stats.recentProducts.length > 0 ? (
+              {(stats.recentProducts?.length || 0) > 0 ? (
                 stats.recentProducts.map((product: any) => (
                   <div key={product._id} className="flex items-center justify-between">
                     <div className="space-y-1">
@@ -161,7 +161,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {stats.recentUsers.length > 0 ? (
+              {(stats.recentUsers?.length || 0) > 0 ? (
                 stats.recentUsers.map((user: any) => (
                   <div key={user._id} className="flex items-center justify-between">
                     <div className="space-y-1">

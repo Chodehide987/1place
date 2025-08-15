@@ -53,7 +53,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed">{product.shortDescription}</p>
 
         <div className="flex flex-wrap gap-2 mb-4">
-          {product.tags.slice(0, 3).map((tag, index) => (
+          {(product.tags || []).slice(0, 3).map((tag, index) => (
             <Badge
               key={index}
               variant="outline"
@@ -62,12 +62,12 @@ export function ProductCard({ product }: ProductCardProps) {
               {tag}
             </Badge>
           ))}
-          {product.tags.length > 3 && (
+          {(product.tags?.length || 0) > 3 && (
             <Badge
               variant="outline"
               className="text-xs bg-gradient-to-r from-primary/10 to-secondary/10 text-primary border-primary/20"
             >
-              +{product.tags.length - 3}
+              +{(product.tags?.length || 0) - 3}
             </Badge>
           )}
         </div>
@@ -79,12 +79,12 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
           <div className="flex items-center gap-1.5">
             <Download className="h-3.5 w-3.5" />
-            {product.downloadableFiles.length} files
+            {product.downloadableFiles?.length || 0} files
           </div>
-          {product.externalLinks.length > 0 && (
+          {(product.externalLinks?.length || 0) > 0 && (
             <div className="flex items-center gap-1.5">
               <ExternalLink className="h-3.5 w-3.5" />
-              {product.externalLinks.length} links
+              {product.externalLinks?.length || 0} links
             </div>
           )}
         </div>
