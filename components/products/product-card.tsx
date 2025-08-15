@@ -1,7 +1,7 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, Download, ExternalLink, Star } from "lucide-react"
+import { Calendar, Download, ExternalLink, Star, Play } from "lucide-react"
 import Link from "next/link"
 import type { Product } from "@/lib/models/product"
 
@@ -10,6 +10,23 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const getProductImage = () => {
+    if (product.coverImage) return product.coverImage
+
+    // Generate appropriate placeholder based on category
+    const category = product.category?.toLowerCase() || "product"
+    if (category.includes("ui") || category.includes("design")) {
+      return "/modern-ui-dashboard.png"
+    } else if (category.includes("icon")) {
+      return "/icon-pack-collection.png"
+    } else if (category.includes("template")) {
+      return "/website-template-design.png"
+    } else if (category.includes("app")) {
+      return "/mobile-app-interface.png"
+    }
+    return "/digital-product-concept.png"
+  }
+
   return (
     <Card className="h-full flex flex-col group hover:shadow-2xl transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 hover:scale-[1.02] hover:border-primary/20">
       <CardHeader className="pb-4">
@@ -20,35 +37,52 @@ export function ProductCard({ product }: ProductCardProps) {
             </h3>
             <p className="text-sm text-muted-foreground mt-2 font-medium">{product.category}</p>
           </div>
-          {product.isPaid ? (
-            <Badge
-              variant="secondary"
-              className="bg-gradient-to-r from-secondary/20 to-accent/20 text-secondary-foreground border-secondary/30 shadow-sm"
-            >
-              Paid
-            </Badge>
-          ) : (
+          <div className="flex gap-2">
+            {product.isPaid ? (
+              <Badge
+                variant="secondary"
+                className="bg-gradient-to-r from-secondary/20 to-accent/20 text-secondary-foreground border-secondary/30 shadow-sm"
+              >
+                Paid
+              </Badge>
+            ) : (
+              <Badge
+                variant="outline"
+                className="bg-gradient-to-r from-green-500/10 to-green-600/10 text-green-600 border-green-500/20"
+              >
+                Free
+              </Badge>
+            )}
             <Badge
               variant="outline"
-              className="bg-gradient-to-r from-green-500/10 to-green-600/10 text-green-600 border-green-500/20"
+              className="bg-gradient-to-r from-blue-500/10 to-blue-600/10 text-blue-600 border-blue-500/20"
             >
-              Free
+              <Play className="h-3 w-3 mr-1" />
+              Demo
             </Badge>
-          )}
+          </div>
         </div>
       </CardHeader>
 
       <CardContent className="flex-1 pb-4">
-        {product.coverImage && (
-          <div className="w-full h-36 bg-gradient-to-br from-muted/50 to-muted/80 rounded-lg mb-4 overflow-hidden group-hover:shadow-lg transition-shadow duration-300">
-            <img
-              src={product.coverImage || "/placeholder.svg?height=144&width=320&query=product+cover"}
-              alt={product.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="w-full h-36 bg-gradient-to-br from-muted/50 to-muted/80 rounded-lg mb-4 overflow-hidden group-hover:shadow-lg transition-shadow duration-300 relative">
+          <img
+            src={getProductImage() || "/placeholder.svg"}
+            alt={product.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              target.src = "/digital-product-concept.png"
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <Button size="sm" variant="secondary" className="h-8 px-2 text-xs bg-background/80 backdrop-blur-sm">
+              <Play className="h-3 w-3 mr-1" />
+              Demo
+            </Button>
           </div>
-        )}
+        </div>
 
         <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed">{product.shortDescription}</p>
 

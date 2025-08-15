@@ -4,7 +4,7 @@ import { AdminDashboard } from "@/components/admin/admin-dashboard"
 
 export default function AdminPage() {
   return (
-    <AuthGuard requireAdmin>
+    <AuthGuard requireAdmin redirectTo="/login">
       <AdminLayout>
         <AdminDashboard />
       </AdminLayout>

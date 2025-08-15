@@ -19,48 +19,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async (token: string) => {
     try {
-      console.log("[v0] Fetching user with token")
       const response = await fetch("/api/auth/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
 
-      console.log("[v0] Auth me response status:", response.status)
-
       if (response.ok) {
         const data = await response.json()
-        console.log("[v0] User data received:", data.user)
         setUser(data.user)
       } else {
-        console.log("[v0] Auth failed, removing token")
         localStorage.removeItem("token")
         setUser(null)
       }
     } catch (error) {
-      console.error("[v0] Failed to fetch user:", error)
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to fetch user:", error)
+      }
       localStorage.removeItem("token")
       setUser(null)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   useEffect(() => {
     const token = localStorage.getItem("token")
-    console.log("[v0] Auth provider initialized, token exists:", !!token)
     if (token) {
       fetchUser(token)
+    } else {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }, [])
 
   const login = (token: string) => {
-    console.log("[v0] Login called with token")
     localStorage.setItem("token", token)
     fetchUser(token)
   }
 
   const logout = () => {
-    console.log("[v0] Logout called")
     localStorage.removeItem("token")
     setUser(null)
   }
