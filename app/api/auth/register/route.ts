@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       role: "user",
     })
 
-    console.log("[v0] User created successfully:", user.email)
+    console.log("[v0] User created successfully:", user.email, "ID:", user._id)
     const token = await generateToken({
       _id: user._id!.toString(),
       email: user.email,
@@ -56,13 +56,18 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof Error) {
       console.error("[v0] Error message:", error.message)
+      console.error("[v0] Error stack:", error.stack?.split("\n").slice(0, 3).join("\n"))
 
-      if (error.message.includes("already exists")) {
+      if (error.message.includes("already exists") || error.message.includes("duplicate key")) {
         return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 })
       }
 
-      if (error.message.includes("Database connection failed")) {
+      if (error.message.includes("Database connection failed") || error.message.includes("MONGODB_URI")) {
         return NextResponse.json({ error: "Database connection error. Please try again." }, { status: 503 })
+      }
+
+      if (error.message.includes("validation")) {
+        return NextResponse.json({ error: "Invalid user data provided" }, { status: 400 })
       }
     }
 

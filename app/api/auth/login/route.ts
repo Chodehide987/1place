@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
     }
 
-    console.log("[v0] User authenticated successfully:", user.email)
+    console.log("[v0] User authenticated successfully:", user.email, "Role:", user.role)
     const token = await generateToken({
       _id: user._id.toString(),
       email: user.email,
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       role: user.role,
     })
 
-    console.log("[v0] Token generated successfully")
+    console.log("[v0] Token generated successfully for role:", user.role)
     return NextResponse.json({
       token,
       user: {
@@ -44,6 +44,10 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error) {
       console.error("[v0] Error message:", error.message)
       console.error("[v0] Error stack:", error.stack)
+
+      if (error.message.includes("Database connection failed")) {
+        return NextResponse.json({ error: "Database connection error. Please try again." }, { status: 503 })
+      }
     }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
