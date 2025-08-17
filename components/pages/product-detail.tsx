@@ -181,6 +181,18 @@ export function ProductDetail({ slug }: ProductDetailProps) {
               <Separator />
 
               <div>
+                <h4 className="font-medium mb-2">License</h4>
+                <Badge variant="outline" className="text-xs">
+                  {product.isPaid ? "Commercial License" : "Free License"}
+                </Badge>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {product.isPaid
+                    ? "Full commercial rights included with purchase"
+                    : "Free for personal and commercial use"}
+                </p>
+              </div>
+
+              <div>
                 <h4 className="font-medium mb-2">Tags</h4>
                 <div className="flex flex-wrap gap-1">
                   {(product.tags || []).map((tag, index) => (
@@ -193,17 +205,51 @@ export function ProductDetail({ slug }: ProductDetailProps) {
             </CardContent>
           </Card>
 
-          {!hasAccess && product.isPaid && (
+          {hasAccess ? (
+            <Card className="border-green-200 bg-green-50/50">
+              <CardContent className="p-6 text-center">
+                <div className="text-green-600 mb-2">✓ Access Granted</div>
+                <h3 className="font-semibold mb-2">Download Available</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  You have full access to this product and all its files.
+                </p>
+                <Button className="w-full bg-green-600 hover:bg-green-700">Download Now</Button>
+              </CardContent>
+            </Card>
+          ) : (
             <Card>
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold mb-2">Get Access</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  This is a paid product. Contact an administrator to get access.
-                </p>
-                {!isAuthenticated && (
-                  <Link href="/login">
-                    <Button className="w-full">Sign In to Continue</Button>
-                  </Link>
+                {product.isPaid ? (
+                  <>
+                    <h3 className="font-semibold mb-2">Premium Product</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Get instant access to this premium product with commercial license.
+                    </p>
+                    {isAuthenticated ? (
+                      <Button className="w-full mb-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                        Request Access
+                      </Button>
+                    ) : (
+                      <Link href="/login">
+                        <Button className="w-full mb-2">Sign In to Purchase</Button>
+                      </Link>
+                    )}
+                    <p className="text-xs text-muted-foreground">Contact admin for pricing and access</p>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-semibold mb-2">Free Product</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      This product is free to download with full license included.
+                    </p>
+                    {isAuthenticated ? (
+                      <Button className="w-full bg-green-600 hover:bg-green-700">Download Free</Button>
+                    ) : (
+                      <Link href="/login">
+                        <Button className="w-full">Sign In to Download</Button>
+                      </Link>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>

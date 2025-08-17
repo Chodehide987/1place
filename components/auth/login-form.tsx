@@ -26,6 +26,7 @@ export function LoginForm() {
     setError("")
 
     try {
+      console.log("[v0] Starting login process")
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -33,16 +34,19 @@ export function LoginForm() {
       })
 
       const data = await response.json()
+      console.log("[v0] Login response:", { success: response.ok, hasToken: !!data.token })
 
       if (response.ok) {
         const user = await login(data.token)
+        console.log("[v0] User authenticated:", { userId: user?.id, role: user?.role })
 
         if (user) {
-          // Force page reload to ensure auth state is properly updated
           if (user.role === "admin") {
-            window.location.href = "/admin"
+            router.push("/admin")
+            router.refresh()
           } else {
-            window.location.href = "/account"
+            router.push("/account")
+            router.refresh()
           }
         } else {
           setError("Failed to authenticate user")
@@ -51,6 +55,7 @@ export function LoginForm() {
         setError(data.error || "Login failed")
       }
     } catch (err) {
+      console.error("[v0] Login error:", err)
       setError("An error occurred. Please try again.")
     } finally {
       setIsLoading(false)
